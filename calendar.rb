@@ -10,14 +10,24 @@ opt.on('-month MONTH'){|m| @m = m }
 opt.parse!(ARGV)
 
 # 年や月が指定されなかった場合、今の年・月を表示する
-if @y == nil || @m == nil
+if @y == nil && @m == nil
+  @y = Date.today.year
+	@m = Date.today.month
+elsif @y == nil
 	@y = Date.today.year
+elsif @m == nil
 	@m = Date.today.month
 end
 
-# 数値以外が入力されるとエラーが出るようにしたい！
-if @y == String || @m == String
-	puts "正の整数値を入力してください"
+# 例外の処理
+if @y =~ /[a-zA-Z]/ || @m =~ /[a-zA-Z]/
+	puts "数値を入力してください"
+  return
+elsif @y.to_i < 1 || @m.to_i < 1
+  puts "数値がマイナス、もしくは小数点以下です"
+  return
+elsif @m.to_i > 12
+  puts "月の数字が大きすぎます"
   return
 end
 
@@ -33,8 +43,11 @@ last_date = Date.new(@y.to_i, @m.to_i, -1)
 (first_date.cwday.to_i % 7).times { |n| print "   "} # 先月分の空白
 (first_date.day - 1..last_date.day - 1).each { |day|
   day += 1
-
-	if day.to_i < 10
+  if Date.new(@y.to_i, @m.to_i, day) == Date.today && day.to_i < 10 # 今日の日付の部分の色を反転させる
+		print " " + "\e[7m#{day}\e[0m" + " "
+  elsif Date.new(@y.to_i, @m.to_i, day) == Date.today && day.to_i >= 10
+		print "\e[7m#{day}\e[0m" + " "
+	elsif day.to_i < 10
 	  print " " + day.to_s + " "
 	else
 		print day.to_s + " "
@@ -45,7 +58,4 @@ last_date = Date.new(@y.to_i, @m.to_i, -1)
   end
 	}
 	print "\n"
-
-# 今日の日付の部分の色を反転させたい！
-p Date.today
 
