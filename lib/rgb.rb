@@ -11,10 +11,11 @@ def to_ints(hex)
   hex.scan(/\w\w/).map(&:hex).join(',')
 end
 
-options = ARGV.getopts('h:i:', 'hex:', 'ints:')
-puts options
-r,g,b = options['h'].split(',') unless options['h'].nil?
-r,g,b = options['hex'].split(',') unless options['hex'].nil?
-puts to_hex(r,g,b) unless options['hex'].nil? && options['h'].nil?
+options = ARGV.getopts('h:i:',
+'h(hex) --  convert from integer to hexadecimal.',
+'i(ints) -- convert from hexadecimal to integer.')
+unless options['h'].nil?
+  r,g,b = options['h'].split(',')
+  puts to_hex(r,g,b)
+end
 puts to_ints(options['i']) unless options['i'].nil?
-puts to_ints(options['ints']) unless options['ints'].nil?
